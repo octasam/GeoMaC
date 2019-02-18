@@ -61,8 +61,8 @@ print("+----------------------------------------------------+")
 x = np.linspace(a,b,N+2)
 
 # Coeficiente de la ecuación que es variable
-gamma = np.abs(np.sin(4 * np.pi * x))
-#gamma = np.random.rand(N+2)
+#gamma = np.abs(np.sin(4 * np.pi * x))
+gamma = np.random.rand(N+2)
 
 # Definicion del sistema lineal de N x N
 f = np.zeros(N)         # Lado derecho

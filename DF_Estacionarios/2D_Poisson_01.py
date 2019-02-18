@@ -85,7 +85,7 @@ xg, yg = np.meshgrid(x,y)
 
 poisson2D.GuardaSolucion(out_file_name, x, y, u)
 
-poisson2D.GraficaSuperficieC(xg,yg,u,'hsv') #hot, cool, rainbow, ...
+poisson2D.GraficaSuperficieC(xg,yg,u,'hot') #hot, cool, rainbow, ...
 
 
 
