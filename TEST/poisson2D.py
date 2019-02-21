@@ -1,10 +1,31 @@
 #!/usr/bin/env pyhton
 
 import numpy as np
+#import matplotlib.pyplot as plt
+#from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 import pylab as pl
+import matplotlib.image as mpimg
 
-def Laplaciano2D(Nx, Ny, diagonal):
+def leeImagen(filename, factor):
+    img=mpimg.imread(filename)
+    k = img[:,:,0]
+    for j in range(k.shape[1]):
+        for i in range(k.shape[0]):
+            if k[i,j] == 0.0:
+                k[i,j] = 0.1
+            if k[i,j] < 1.0:
+                k[i,j] *= factor                
+ #           print(k[i,j], sep=' ', end= ' ')
+ #       print()
+
+    return k.transpose()
+
+
+def u_face(u1, u2):
+    return 0.5 * (u1 + u2)
+
+def Laplaciano2D(Nx, Ny, r, k):
     """ Esta funcion calcula los coeficientes del 
     sistema lineal producido por el operador de 
     Laplace en 2D. Estos coeficientes son almacenados 
@@ -13,22 +34,47 @@ def Laplaciano2D(Nx, Ny, diagonal):
     A = np.zeros((N,N))
 
 # Primero llena los bloques tridiagonales
-    for j in range(0,Ny):
-        ofs = Nx * j
-        A[ofs, ofs] = diagonal; 
-        A[ofs, ofs + 1] = 1
-        for i in range(1,Nx-1):
-            A[ofs + i, ofs + i]     = diagonal
-            A[ofs + i, ofs + i + 1] = 1
-            A[ofs + i, ofs + i - 1] = 1
-        A[ofs + Nx - 1, ofs + Nx - 2] = 1; 
-        A[ofs + Nx - 1, ofs + Nx - 1] = diagonal 
+    for j in range(1,Ny+1):
+        ofs = Nx * (j-1)     
+        # Primer renglón del bloque, considera BC en la pared izq.
+        k1 = u_face(k[0,j  ], k[1,j]) # k_(i-1/2, j)
+        k2 = u_face(k[2,j  ], k[1,j]) # k_(i+1/2, j)
+        k3 = u_face(k[1,j+1], k[1,j]) # k_(i, j-1/2)
+        k4 = u_face(k[1,j-1], k[1,j]) # k_(i, j+1/2)
+        A[ofs    , ofs] = r * (k1 + k2 + k3 + k4) 
+        A[ofs + 1, ofs] = -r * k2
 
+        # Renglones intermedios del bloque 
+        for i in range(2,Nx):
+            k1 = u_face(k[i-1,j], k[i,j]) # k_(i-1/2, j)
+            k2 = u_face(k[i+1,j], k[i,j]) # k_(i+1/2, j)
+            k3 = u_face(k[i,j-1], k[i,j]) # k_(i, j-1/2)
+            k4 = u_face(k[i,j+1], k[i,j]) # k_(i, j+1/2)
+            I = ofs + i - 1
+            A[I  , I] = r * (k1 + k2 + k3 + k4)
+            A[I-1, I] = -r * k1
+            A[I+1, I] = -r * k2
+
+        # Último renglón del bloque, considera BC en la pared der.
+        k1 = u_face(k[Nx-1,j  ], k[Nx,j]) # k_(i-1/2, j)
+        k2 = u_face(k[Nx+1,j  ], k[Nx,j]) # k_(i+1/2, j)
+        k3 = u_face(k[Nx  ,j-1], k[Nx,j]) # k_(i, j-1/2)
+        k4 = u_face(k[Nx  ,j+1], k[Nx,j]) # k_(i, j+1/2)
+        I = ofs + Nx - 1
+        A[I-1,I] = -r * k1 
+        A[I  ,I] = r * (k1 + k2 + k3 + k4) 
+
+       
 # Despues llena las dos diagonales externas
-    for k in range(0,N-Nx):
-        A[k, Nx + k] = 1
-        A[Nx + k, k] = 1
-
+    I = 0
+    for j in range(1, Ny):
+        for i in range(1,Nx+1):
+            k3 = u_face(k[i,j-1+1], k[i,j+1]) # k_(i, j-1/2)
+            k4 = u_face(k[i,j+1], k[i,j]) # k_(i, j+1/2)
+            A[I   , I+Nx] = -r * k3 # South, 3, down
+            A[I+Nx, I   ] = -r * k4 # North, 4, up
+            I += 1
+    
     return A
 
 def LeeDatos(filename):
@@ -75,21 +121,24 @@ def ImprimeDatos(ax,bx,ay,by,Nx,Ny,hx,hy,A,cd1,B,cd2,C,cd3,D,cd4):
 def ImprimeSistema(A,u,f):
     """ Esta funcion imprime el sistema lineal asi como la solucion
     del mismo, siempre y cuando su longitud sea menor o igual a 10."""
-    if f.size <= 20:
-        print("\n Lado derecho del sistema : size = %d \n" % f.size, f)
-        print("\n Matriz del sistema : \n", A)
-        print("\n Solucion del sistema : size = %d \n" % u.size, u)
+    print("\n Lado derecho del sistema : size = %d \n" % f.size, f)
+    print("\n Matriz del sistema : \n", A)
+    print("\n Solucion del sistema : size = %d \n" % u.size, u)
+#    for i in range(A.shape[1]):
+#        for j in range(A.shape[0]):
+#            print(A[i,j], sep='  ', end=' ')
+#        print('\n')
 
 def GraficaSuperficieC(xg,yg,u,colormap):
-    pl.contourf(xg, yg, u, 8, alpha=.75, cmap=colormap)
-    C = pl.contour(xg, yg, u, 8, colors='black', linewidth=.5)
+    pl.contourf(xg, yg, u, 100, alpha=.95, cmap=colormap)
+    C = pl.contour(xg, yg, u, 100, colors='black', alpha=0.01, linewidth=.5)
     pl.clabel(C, inline=1, fontsize=10)
     
     fig = pl.figure()
     ax = Axes3D(fig)
-    ax.plot_surface(xg, yg, u, rstride=1, cstride=1, cmap=colormap)
-    ax.contourf(xg, yg, u, zdir='z', offset=-2, cmap=colormap)
-    ax.set_zlim(-20, 100)
+    ax.plot_surface(xg, yg, u, rstride=5, cstride=5, alpha=.95, cmap=colormap)
+ #   ax.contourf(xg, yg, u, zdir='z', offset=-2, cmap=colormap)
+ #   ax.set_zlim(-1, 1)
 
     pl.show()
 
@@ -101,6 +150,8 @@ def GuardaSolucion(filename, x, y, u):
         for j in range(0,y.size):
             ofile.write('%12.10g \t %12.10g \t %12.10g\n' % (x[i], y[j],u[j,i]))
     ofile.close()
+
+
 
 #if __name__ == "__main__":
 

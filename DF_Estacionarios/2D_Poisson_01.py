@@ -57,11 +57,9 @@ ut.shape = ut.size   # Cambiamos los arreglos a formato unidimensional
 f.shape = f.size     # Cambiamos los arreglos a formato unidimensional
 
 t1_start = time.perf_counter()
-t2_start = time.process_time()
 ut = np.linalg.solve(A,f)
 t1_stop = time.perf_counter()
-t2_stop = time.process_time()
-print(time.ctime(), '\n {:0.6f} s\n {:0.6f} s'.format(t1_stop-t1_start, t2_start-t2_stop))
+print(time.ctime(), '\n CPUT time: {:0.6f} \n '.format(t1_stop-t1_start))
 
 # Los valores en los lados del dominio son conocidos debido a las cond. Dirichlet
 u[Ny+1,:   ] = boundB 

@@ -32,7 +32,7 @@ u = np.zeros(N+2)
 k = np.ones(N+2)
 
 #Ejemplo 2.
-#k[0:int(N/2)] = 0.02
+k[0:int(N/2)] = 0.02
 
 #Ejemplo 3.
 #k[0:int(N/4)] = 1.0
