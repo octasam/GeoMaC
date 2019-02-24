@@ -6,7 +6,8 @@ import time
 
 import matplotlib.pyplot as plt
 
-k = poisson2D.leeImagen('imagen.png',0.00000001)
+filename = input('Nombre del archivo:')
+k = poisson2D.leeImagen(filename,0.075)
 
 ax = 0.0
 bx = 1.0
@@ -14,12 +15,11 @@ ay = 0.0
 by = 1.0
 Nx = k.shape[0]-2
 Ny = k.shape[1]-2
-boundA = -1
-boundB = -1
-boundC = 1
-boundD = 1
+boundA = -0
+boundB = -0
+boundC = 0
+boundD = 0
 
-#k = np.ones([Nx+2,Ny+2])
 ## Calcula Delta x y Delta y
 hx = (bx-ax)/(Nx+1)
 hy = (by-ay)/(Ny+1)
@@ -37,12 +37,17 @@ poisson2D.ImprimeDatos(ax,bx,ay,by,Nx,Ny,hx,hy,
 f = np.zeros((Ny,Nx)) # RHS
 A = poisson2D.Laplaciano2D(Nx, Ny,1,k) # Matriz del sistema
 
+
+for j in range(Ny):
+	for i in range(Nx):
+		f[i,j] = k[i+1,j+1]
+
 ## Aplicacion de las condiciones de frontera Dirichlet
 
-f[Ny-1,:   ] = boundB # Top wall
-f[0   ,:   ] = boundA # Bot wall
-f[:   ,0   ] = boundC # Left wall
-f[:   ,Nx-1] = boundD # Right wall
+f[Ny-1,:   ] += boundB # Top wall
+f[0   ,:   ] += boundA # Bot wall
+f[:   ,0   ] += boundC # Left wall
+f[:   ,Nx-1] += boundD # Right wall
 
 
 ## La solucion sera guardada en el arreglo u, que es de tamanio Ny+2 x Nx+2, pues incluye las fronteras
