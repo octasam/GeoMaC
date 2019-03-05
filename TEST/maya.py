@@ -1,9 +1,12 @@
 import numpy as np
 
 def mesh(a,b,c,d,Nx,Ny):
-	x = np.linspace(a,b,Nx)
-	y = np.linspace(c,d,Ny)
-	return x, y
+    """
+    Esta funcion hace la malla ...
+    """
+    x = np.linspace(a,b,Nx)
+    y = np.linspace(c,d,Ny)
+    return x, y
 
 def deltas(a,b,c,d,Nx,Ny):
 	hx =  (b-a)/(Nx+1)
@@ -24,3 +27,4 @@ if __name__ == "__main__":
 
 	print(x, y)
 	print(hx, hy)
+    
