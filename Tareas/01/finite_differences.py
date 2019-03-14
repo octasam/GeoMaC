@@ -67,10 +67,10 @@ def dirichlet(f, u, boundA, boundB, boundC, boundD):
 	Nx = f.shape[1]
 	Ny = f.shape[0]
 
-	f[Ny-1,:   ] = boundA # Top wall
-	f[0   ,:   ] = boundB # Bot wall
-	f[:   ,0   ] = boundC # Left wall
-	f[:   ,Nx-1] = boundD # Right wall
+	f[Ny-1,:   ] += boundA # Top wall
+	f[0   ,:   ] += boundB # Bot wall
+	f[:   ,0   ] += boundC # Left wall
+	f[:   ,Nx-1] += boundD # Right wall
 
 	u[Ny+1,:   ] = boundB # Top wall
 	u[0   ,:   ] = boundA # Bot wall

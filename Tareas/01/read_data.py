@@ -7,10 +7,11 @@ def read():
 	except:
 		mensaje = """ Error: La ejecucion de este programa es como sigue: 
 
-		python estacionario.py INPUT_est.txt OUTPUT_est.txt
+		python programa.py entrada.txt salida.txt
 
-		entrada: es el nombre de un archivo que contiene los datos del problema. 
-		salida: se usa para almacenar la solucion del problema."""
+		programa.py: es el programa en Python a ejecutar.
+		entrada.txt: es el nombre de un archivo que contiene los datos del problema. 
+		salida.txt: se usa para almacenar la solucion del problema."""
 		print(mensaje)
 		sys.exit(1)
 
