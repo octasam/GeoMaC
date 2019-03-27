@@ -62,6 +62,8 @@ fig.colorbar(cax)
 
 title_graf = '$\partial T / \partial t = \partial (\Gamma \partial T/\partial x)/\partial x$ Time = {:>8.5f}'
 
+plt.show()
+
 input('Presiona <enter> para comenzar la ejecución')
 
 def animate(i):
