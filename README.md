@@ -1,5 +1,6 @@
-# mmc_II_2019
-Programas en Python 3.x de la materia MMCII
-Posgrado en Ciencia de la Tierra.
-Posgrado en Ciencia e Ingeniería de la Computación.
+# GeoMaC
+Material didáctico para la materia de Geofísica Matemática y Computacional.
+
+Ingeniería Geofísica, UNAM, 2020.
+
 Autor: Dr. Luis Miguel de la Cruz Salas.
